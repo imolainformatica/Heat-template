@@ -1,0 +1,17 @@
+heat_template_version: 2016-04-08
+
+description: Simple template to deploy a single compute instance
+
+resources:
+  my_instance:
+    type: OS::Nova::Server
+    properties:
+      key_name: morlins-XPS-15-9550
+      image: xenial
+      flavor: m1.small
+      networks:
+        - network: interna
+      user_data: |
+        #!/bin/bash -ex
+        echo "Hello, World!"
+      user_data_format: RAW
