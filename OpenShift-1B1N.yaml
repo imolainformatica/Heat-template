@@ -1,4 +1,4 @@
-heat_template_version: 2013-05-23
+heat_template_version: 2016-04-08
 description: Template for setting up an OpenShift Origin environment
 parameters:
   dns_prefix:
@@ -117,7 +117,7 @@ resources:
             $user_name$: { get_param: user_name }
             $password$: { get_param: password }
             $broker_wait_handle$: { get_resource: broker_wait_handle }
-
+          user_data_format: RAW
   OpenShiftNode:
     type: OS::Nova::Server
     depends_on: broker_wait_condition
@@ -171,3 +171,4 @@ resources:
             $dns_server$: { get_param: dns_server }
             $dns_sec_key$: { get_attr: [ broker_wait_condition, Data ] }
             $broker_ip$: { get_attr: [ OpenShiftBroker, first_address ] }
+          user_data_format: RAW
