@@ -27,6 +27,15 @@ parameters:
     description: password for OpenShift login
     type: string
     default: password
+  image:
+    type: string
+    description: The image to be used for the server.
+    constraints:
+      - custom_constraint: glance.image
+  network_name: 
+    description: specific network selection
+    type: string
+    default: n1
 resources:
   broker_wait_handle:
     type: AWS::CloudFormation::WaitConditionHandle
@@ -55,15 +64,18 @@ resources:
   OpenShiftBroker:
     type: OS::Nova::Server
     properties:
-      image: centos-6.5-x86_64-cfntools
+      image: {get_param: image}
       flavor: {get_param: instance_type}
       key_name: {get_param: key_name}
+      networks:
+      - network: {get_param: network_name}
       security_groups: [ {get_resource: OpenShiftSecurityGroup} ]
       user_data:
         str_replace:
           template: |
             #!/bin/bash -v
-
+            echo 'nameserver 8.8.8.8'>>  /etc/resolv.conf
+            echo "LOG enter on template"
             yum -y install https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
             yum -y install http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm
             yum -y install augeas
@@ -110,15 +122,18 @@ resources:
     type: OS::Nova::Server
     depends_on: broker_wait_condition
     properties:
-      image: centos-6.5-x86_64-cfntools
+      image: {get_param: image}
       flavor: {get_param: instance_type}
       key_name: {get_param: key_name}
+      networks:
+      - network: {get_param: network_name}
       security_groups: [ {get_resource: OpenShiftSecurityGroup} ]
       user_data:
         str_replace:
           template: |
             #!/bin/bash -v
-
+            echo 'nameserver 8.8.8.8'>>  /etc/resolv.conf
+            echo "LOG enter on template"
             yum -y install https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
             yum -y install http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm
             yum -y install augeas
